@@ -1,18 +1,16 @@
-class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
-  skip_before_action :doorkeeper_authorize!, only: %i[login]
-  skip_before_action :vendor?, only: %i[login]
-  def login
-    vendor = Vendor.find_by(email: vendor_params[:email])
+class Api::V1::Csutomer::RegistrationsController < Api::V1::Csutomer::BaseController
+  skip_before_action :doorkeeper_authorize!, only: %i[sign_up]
+
+  def sign_up
+    customer = Customer.new(email: customer_params[:email])
     client_app = Doorkeeper::Application.find_by(uid: params[:client_id])
 
     return render(json: { error: 'Invalid client ID'}, status: 403) unless client_app
 
-    if vendor
-      return render json: { message: "You are not authorized to perform this action yet"}, status: :unauthorized if vendor.status == "pending" || vendor.status == "rejected"
-
-      # create access token for the vendor, so the vendor won't need to login again after registration
+    if customer.save
+      # create access token for the customer, so the customer won't need to login again after registration
       access_token = Doorkeeper::AccessToken.create(
-        resource_owner_id: vendor.id,
+        resource_owner_id: customer.id,
         application_id: client_app.id,
         refresh_token: generate_refresh_token,
         expires_in: Doorkeeper.configuration.access_token_expires_in.to_i,
@@ -20,11 +18,12 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
       )
       
       # return json containing access token and refresh token
-      # so that vendor won't need to call login API right after registration
+      # so that customer won't need to call login API right after registration
       render(json: {
-        vendor: {
-          id: vendor.id,
-          email: vendor.email,
+        customer: {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
           access_token: access_token.token,
           token_type: 'bearer',
           expires_in: access_token.expires_in,
@@ -33,7 +32,7 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
         }
       })
     else
-      render(json: { error: "Not Found" }, status: 404)
+      render(json: { error: customer.errors.full_messages }, status: 422)
     end
   end
 
@@ -48,7 +47,7 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
     end
   end 
 
-  def vendor_params
-    params.require(:vendor).permit(:email, :password)
+  def customer_params
+    params.require(:customer).permit(:name, :phone_number, :email, :password)
   end
 end

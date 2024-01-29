@@ -6,9 +6,6 @@ Doorkeeper.configure do
   orm :active_record  
 
   resource_owner_from_credentials do |_routes|
-    
-    binding.pry
-    
     self.authenticate(params[:email], params[:password])
   end
 

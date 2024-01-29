@@ -23,9 +23,11 @@ Rails.application.routes.draw do
         get '/requests', to: 'requests#list_of_requests'
         post '/approve_request/:vendor_id', to: 'requests#approve_request'
         post '/reject_request/:vendor_id', to: 'requests#reject_request'
+        resources :food_items, only: [:index]
       end
 
       namespace :customer do
+        post '/sign_up', to: 'registrations#sign_up'
         post '/login', to: 'sessions#login'
       end
 

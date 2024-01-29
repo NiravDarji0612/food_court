@@ -1,11 +1,12 @@
 class Api::V1::Admin::RequestsController < Api::V1::Admin::BaseController
 
   def list_of_requests
-   @requests =  if params['approved'] == 'true'
+   @requests =  case params['status']
+                when 'approved' 
                   Vendor.approved
-                elsif params['rejected'] == 'true'
+                when 'rejected'
                   Vendor.rejected
-                elsif params['pending'] == 'true'
+                when 'pending'
                   Vendor.pending
                 else
                   Vendor.all

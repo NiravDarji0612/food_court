@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_26_150522) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_29_095815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -76,15 +76,26 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_26_150522) do
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
   end
 
+  create_table "demos", force: :cascade do |t|
+    t.text "name"
+    t.string "email"
+    t.string "phone"
+    t.string "city"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "food_items", force: :cascade do |t|
     t.string "name"
-    t.string "type"
+    t.string "item_type"
     t.string "sub_type", default: [], array: true
     t.string "taste", default: [], array: true
     t.string "tags", default: [], array: true
     t.integer "price"
+    t.bigint "vendor_category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["vendor_category_id"], name: "index_food_items_on_vendor_category_id"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
