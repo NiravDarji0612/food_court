@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "home#index"
   
   use_doorkeeper do
     skip_controllers :authorizations, :applications, :authorized_applications
@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :admin do
+        post '/sign_up', to: 'registrations#sign_up'
         post '/login', to: 'sessions#login'
         resources :categories
         get '/requests', to: 'requests#list_of_requests'

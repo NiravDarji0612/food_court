@@ -1,0 +1,9 @@
+entrypoint: bundle exec rackup --port $PORT
+env: flex
+runtime: ruby
+
+env_variables:
+  SECRET_KEY_BASE: 02d2f8a3a5f162ea94f058d0c42b3c94184a285c29138fd63e06b7c8759fbb030faa453109d4b90d22e230fb5a7fd3cba059dd777153ee2f550a04cd198d6d8b
+
+beta_settings:
+  cloud_sql_instances: food-court-api:asia-south1:foodcourtproduction1

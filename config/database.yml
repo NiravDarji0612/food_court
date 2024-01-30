@@ -80,7 +80,11 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: food_court_management_part_1_production
-  username: food_court_management_part_1
-  password: <%= ENV["FOOD_COURT_MANAGEMENT_PART_1_DATABASE_PASSWORD"] %>
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  timeout: 5000
+  username: "postgres"
+  password: "root"
+  database: "food_court_production_1"
+  host:   "/cloudsql/food-court-api:asia-south1:foodcourtproduction1"

@@ -1,16 +1,17 @@
-class Api::V1::Customer::RegistrationsController < Api::V1::Customer::BaseController
+class Api::V1::Admin::RegistrationsController < Api::V1::Admin::BaseController
   skip_before_action :doorkeeper_authorize!, only: %i[sign_up]
+  skip_before_action :admin?, only: %i[sign_up]
 
   def sign_up
-    customer = Customer.new(customer_params)
+    admin = Admin.new(admin_params)
     client_app = Doorkeeper::Application.find_by(uid: params[:client_id])
 
     return render(json: { error: 'Invalid client ID'}, status: 403) unless client_app
 
-    if customer.save
-      # create access token for the customer, so the customer won't need to login again after registration
+    if admin.save
+      # create access token for the admin, so the admin won't need to login again after registration
       access_token = Doorkeeper::AccessToken.create(
-        resource_owner_id: customer.id,
+        resource_owner_id: admin.id,
         application_id: client_app.id,
         refresh_token: generate_refresh_token,
         expires_in: Doorkeeper.configuration.access_token_expires_in.to_i,
@@ -18,12 +19,11 @@ class Api::V1::Customer::RegistrationsController < Api::V1::Customer::BaseContro
       )
       
       # return json containing access token and refresh token
-      # so that customer won't need to call login API right after registration
+      # so that admin won't need to call login API right after registration
       render(json: {
-        customer: {
-          id: customer.id,
-          name: customer.name,
-          email: customer.email,
+        admin: {
+          id: admin.id,
+          email: admin.email,
           access_token: access_token.token,
           token_type: 'bearer',
           expires_in: access_token.expires_in,
@@ -32,7 +32,7 @@ class Api::V1::Customer::RegistrationsController < Api::V1::Customer::BaseContro
         }
       })
     else
-      render(json: { error: customer.errors.full_messages }, status: 422)
+      render(json: { error: admin.errors.full_messages }, status: 422)
     end
   end
 
@@ -47,7 +47,7 @@ class Api::V1::Customer::RegistrationsController < Api::V1::Customer::BaseContro
     end
   end 
 
-  def customer_params
-    params.require(:customer).permit(:name, :phone_number, :email, :password)
+  def admin_params
+    params.require(:admin).permit(:name, :email, :password)
   end
 end

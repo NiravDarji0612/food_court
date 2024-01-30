@@ -1,5 +1,6 @@
 class Api::V1::Vendor::RegistrationsController < Api::V1::Vendor::BaseController
   skip_before_action :doorkeeper_authorize!, only: %i[sign_up]
+  skip_before_action :vendor?, only: %i[sign_up]
 
   def sign_up
     vendor = Vendor.new(vendor_params)

@@ -49,3 +49,5 @@ end
 gem 'devise'
 gem 'doorkeeper'
 
+
+gem "appengine", "~> 0.6"
