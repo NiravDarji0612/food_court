@@ -30,6 +30,8 @@ Rails.application.routes.draw do
       namespace :customer do
         post '/sign_up', to: 'registrations#sign_up'
         post '/login', to: 'sessions#login'
+        resources :categories, only: %i[index show]
+        resources :food_items, only: %i[index show]
       end
 
       namespace :vendor do
