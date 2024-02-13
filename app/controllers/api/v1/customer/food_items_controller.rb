@@ -3,7 +3,7 @@ class Api::V1::Customer::FoodItemsController < Api::V1::Customer::BaseController
   def index
     category_id = params[:category_id]
     vendor_id = params[:vendor_id]
-  
+
     @food_items = case
                   when category_id && vendor_id
                     FoodItem.joins(:vendor_category).where(vendor_categories: { category_id: category_id, vendor_id: vendor_id })
@@ -14,9 +14,9 @@ class Api::V1::Customer::FoodItemsController < Api::V1::Customer::BaseController
                   else
                     FoodItem.all
                   end.includes(vendor_category: [:category, :vendor])
-  
+
     return render json: { message: "Food items are not present" }, status: :not_found if @food_items.empty?
-  
+
     render json: { food_items: @food_items.as_json(include: { vendor_category: { include: [:category, :vendor] } }), message: "Food items have been fetched successfully" }, status: :ok
   end
 

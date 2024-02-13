@@ -29,7 +29,7 @@ class Api::V1::Admin::RequestsController < Api::V1::Admin::BaseController
   def reject_request
     vendor = Vendor.find_by_id(params[:vendor_id])
     return render json: { message: "Vendor not found"}, status: :not_found unless vendor
-    
+
     if vendor.update(status: "rejected")
       render json: { message: "#{vendor.first_name}'s request has been rejected"}, status: :ok
     else
