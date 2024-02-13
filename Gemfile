@@ -49,6 +49,7 @@ end
 
 gem 'devise'
 gem 'doorkeeper'
+gem 'sprockets-rails', :require => 'sprockets/railtie'
 
 
 gem "appengine", "~> 0.6"
