@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
+  get "/check_thread", to: "home#check_thread"
 
   use_doorkeeper do
     skip_controllers :authorizations, :applications, :authorized_applications
@@ -32,6 +33,14 @@ Rails.application.routes.draw do
         post '/login', to: 'sessions#login'
         resources :categories, only: %i[index show]
         resources :food_items, only: %i[index show]
+        # resource :cart, only: [:show] do
+        #   post 'add_to_cart/:food_item_id', action: :add_to_cart, on: :member, as: :add_to_cart
+        #   delete 'delete_cart/:cart_id', action: :destroy, on: :member
+        # end
+        resource :carts, only: %i[create destroy update] do 
+          resources :cart_items
+        end
+        get '/cart', to: "carts#cart"
       end
 
       namespace :vendor do

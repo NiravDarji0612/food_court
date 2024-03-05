@@ -8,4 +8,7 @@ class Customer < ApplicationRecord
     customer = Customer.find_for_authentication(email: email)
     customer&.valid_password?(password) ? customer : nil
   end
+
+  has_one :cart, dependent: :destroy
+  has_many :orders, dependent: :destroy
 end

@@ -32,7 +32,7 @@ class Api::V1::Customer::FoodItemsController < Api::V1::Customer::BaseController
 
   def set_food_item
     @food_item = FoodItem.find_by_id(params[:id])
-    return render json: { message: "Food item not found"}, status: :not_found unless @food_item
+    render json: { message: "Food item not found"}, status: :not_found unless @food_item
   end
 
   # def set_vendor_category

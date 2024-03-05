@@ -20,7 +20,7 @@ class Api::V1::Customer::CategoriesController < Api::V1::Customer::BaseControlle
   end
 
   private
-  
+
   def category_params
     params.require(:category).permit(:name, :image)
   end

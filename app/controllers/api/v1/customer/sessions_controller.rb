@@ -1,7 +1,7 @@
 class Api::V1::Customer::SessionsController < Api::V1::Customer::BaseController
   skip_before_action :doorkeeper_authorize!, only: %i[login]
   def login
-    customer = Customer.find_by(email: customer_params[:email])
+    customer = Customer.authenticate(customer_params[:email], customer_params["password"])
     client_app = Doorkeeper::Application.find_by(uid: params[:client_id])
 
     return render(json: { error: 'Invalid client ID'}, status: 403) unless client_app
@@ -21,6 +21,7 @@ class Api::V1::Customer::SessionsController < Api::V1::Customer::BaseController
       render(json: {
         customer: {
           id: customer.id,
+          name: customer&.name,
           email: customer.email,
           access_token: access_token.token,
           token_type: 'bearer',

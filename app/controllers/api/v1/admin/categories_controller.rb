@@ -1,5 +1,7 @@
 class Api::V1::Admin::CategoriesController < Api::V1::Admin::BaseController
   before_action :set_category, except: %i[index create]
+  skip_before_action :admin?, only: :index
+  skip_before_action :doorkeeper_authorize!, only: :index
   def index
     categories = Category.all
     if categories

@@ -8,29 +8,31 @@ class Api::V1::Vendor::FoodItemsController < Api::V1::Vendor::BaseController
     else
       @food_items = FoodItem.joins(:vendor_category).where(vendor_categories: { vendor_id: current_vendor.id })
     end
-    @food_items = @food_items.map{|food_item| food_item.attributes.merge({category_name: food_item&.vendor_category&.category&.name})}
-    return render json: { message: "Food items are not present"}, status: :not_found unless @food_items.present?
+    @food_items = @food_items.map do |food_item|
+      food_item.attributes.merge({ category_name: food_item&.vendor_category&.category&.name })
+    end
+    return render json: { message: 'Food items are not present' }, status: :not_found unless @food_items.present?
 
-    render json: { food_items: @food_items, message: "Food items has been fetched successfully"}, status: :ok
+    render json: { food_items: @food_items, message: 'Food items has been fetched successfully' }, status: :ok
   end
 
   def create
     food_item = FoodItem.new(food_item_params)
     food_item.vendor_category = @vendor_category
     if food_item.save
-      render json: { food_item: food_item, message: "Food item has been created successfully"}, status: :created
+      render json: { food_item:, message: 'Food item has been created successfully' }, status: :created
     else
       render json: { message: food_item.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def show
-    render json: { food_item: @food_item, message: "Food item has been fetched successfully"}, status: :ok
+    render json: { food_item: @food_item, message: 'Food item has been fetched successfully' }, status: :ok
   end
 
   def update
     if @food_item.update(food_item_params)
-      render json: { food_item: @food_item, message: "Food item has been updated successfully"}, status: :ok
+      render json: { food_item: @food_item, message: 'Food item has been updated successfully' }, status: :ok
     else
       render json: { message: @food_item.errors.full_messages }, status: :unprocessable_entity
     end
@@ -38,7 +40,7 @@ class Api::V1::Vendor::FoodItemsController < Api::V1::Vendor::BaseController
 
   def destroy
     if @food_item.destroy
-      render json: { message: "Food item has been removed successfully"}, status: :ok
+      render json: { message: 'Food item has been removed successfully' }, status: :ok
     else
       render json: { message: @food_item.errors.full_messages }, status: :unprocessable_entity
     end
@@ -52,11 +54,12 @@ class Api::V1::Vendor::FoodItemsController < Api::V1::Vendor::BaseController
 
   def set_food_item
     @food_item = FoodItem.find_by_id(params[:id])
-    return render json: { message: "Food item not found"}, status: :not_found unless @food_item
+    render json: { message: 'Food item not found' }, status: :not_found unless @food_item
   end
 
   def set_vendor_category
-    return render json: { message: "Please include the id of category"} unless params[:category_id]
+    return render json: { message: 'Please include the id of category' } unless params[:category_id]
+
     @vendor_category = VendorCategory.find_by(vendor_id: current_vendor.id, category_id: params[:category_id])
   end
 end

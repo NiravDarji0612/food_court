@@ -17,7 +17,7 @@ class Api::V1::Admin::RegistrationsController < Api::V1::Admin::BaseController
         expires_in: Doorkeeper.configuration.access_token_expires_in.to_i,
         scopes: ''
       )
-      
+
       # return json containing access token and refresh token
       # so that admin won't need to call login API right after registration
       render(json: {

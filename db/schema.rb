@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_01_123535) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -68,10 +68,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_01_123535) do
   end
 
   create_table "carts", force: :cascade do |t|
+    t.integer "final_price", default: 0
     t.bigint "customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["customer_id"], name: "index_carts_on_customer_id"
+    t.index ["customer_id"], name: "index_carts_on_customer_id".
   end
 
   create_table "categories", force: :cascade do |t|
@@ -111,8 +112,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_01_123535) do
     t.string "tags", default: [], array: true
     t.integer "price"
     t.bigint "vendor_category_id"
+    t.bigint "cart_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["cart_id"], name: "index_food_items_on_cart_id"
     t.index ["vendor_category_id"], name: "index_food_items_on_vendor_category_id"
   end
 
@@ -142,6 +145,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_01_123535) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.bigint "cart_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cart_id"], name: "index_orders_on_cart_id"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
   end
 
   create_table "vendor_categories", force: :cascade do |t|
@@ -177,6 +189,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_01_123535) do
     t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "stall_name"
     t.index ["email"], name: "index_vendors_on_email", unique: true
     t.index ["reset_password_token"], name: "index_vendors_on_reset_password_token", unique: true
   end
@@ -187,4 +200,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_01_123535) do
   add_foreign_key "cart_items", "food_items"
   add_foreign_key "carts", "customers"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "orders", "carts"
+  add_foreign_key "orders", "customers"
 end

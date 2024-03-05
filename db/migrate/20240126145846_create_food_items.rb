@@ -8,6 +8,7 @@ class CreateFoodItems < ActiveRecord::Migration[7.1]
       t.string :tags, array: true, default: []
       t.integer :price
       t.references :vendor_category
+      t.references :cart
 
       t.timestamps
     end

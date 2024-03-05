@@ -2,7 +2,7 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
   skip_before_action :doorkeeper_authorize!, only: %i[login]
   skip_before_action :vendor?, only: %i[login]
   def login
-    vendor = Vendor.find_by(email: vendor_params[:email])
+    vendor = Vendor.authenticate(vendor_params["email"], vendor_params["password"])
     client_app = Doorkeeper::Application.find_by(uid: params[:client_id])
 
     return render(json: { error: 'Invalid client ID'}, status: 403) unless client_app
@@ -18,19 +18,17 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
         expires_in: Doorkeeper.configuration.access_token_expires_in.to_i,
         scopes: ''
       )
-      
+
       # return json containing access token and refresh token
       # so that vendor won't need to call login API right after registration
       render(json: {
-        vendor: {
-          id: vendor.id,
-          email: vendor.email,
-          access_token: access_token.token,
-          token_type: 'bearer',
-          expires_in: access_token.expires_in,
-          refresh_token: access_token.refresh_token,
-          created_at: access_token.created_at.to_time.to_i
-        }
+        vendor: vendor,
+        categories: vendor&.categories,
+        access_token: access_token.token,
+        token_type: 'bearer',
+        expires_in: access_token.expires_in,
+        refresh_token: access_token.refresh_token,
+        created_at: access_token.created_at.to_time.to_i
       })
     else
       render(json: { error: "Not Found" }, status: 404)

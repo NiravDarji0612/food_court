@@ -53,3 +53,4 @@ gem 'sprockets-rails', :require => 'sprockets/railtie'
 
 
 gem "appengine", "~> 0.6"
+gem 'benchmark'
