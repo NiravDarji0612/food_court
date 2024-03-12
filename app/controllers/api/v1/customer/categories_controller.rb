@@ -1,7 +1,7 @@
 class Api::V1::Customer::CategoriesController < Api::V1::Customer::BaseController
   before_action :set_category, except: %i[index]
   def index
-    categories = Category.includes(:vendors).all
+    categories = Category.includes(vendors: [stall_logo_attachment: :blob])
     categories = categories.map do |cat|
       cat.attributes.merge({ vendors: cat.vendors })
     end

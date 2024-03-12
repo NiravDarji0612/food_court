@@ -3,7 +3,7 @@ class Api::V1::Admin::CategoriesController < Api::V1::Admin::BaseController
   skip_before_action :admin?, only: :index
   skip_before_action :doorkeeper_authorize!, only: :index
   def index
-    categories = Category.all
+    categories = Category.with_attached_image.all
     if categories
       render json: { categories: categories, message: "Categories has been fetched successfully" }, status: :ok
     else
@@ -41,7 +41,7 @@ class Api::V1::Admin::CategoriesController < Api::V1::Admin::BaseController
   end
 
   private
-  
+
   def category_params
     params.require(:category).permit(:name, :image)
   end

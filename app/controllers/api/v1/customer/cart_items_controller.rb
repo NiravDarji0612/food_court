@@ -2,10 +2,6 @@ class Api::V1::Customer::CartItemsController < Api::V1::Customer::BaseController
   before_action :set_cart
   before_action :set_cart_item, only: %i[destroy update]
 
-  # def index
-  # end
-  # def show
-  # end
   def create
     cart_item = CartItem.new(cart_item_params)
     cart_item.cart = @cart

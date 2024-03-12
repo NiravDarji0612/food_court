@@ -13,7 +13,6 @@ class Api::V1::Customer::CartsController < Api::V1::Customer::BaseController
     render json: { cart:, message: 'Cart has been created successfully' }
   end
 
-
   def update
     if @cart.update(cart_params)
       render json: { cart: @cart, message: 'cart has been updated successfully' }, status: :ok

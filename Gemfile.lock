@@ -177,6 +177,9 @@ GEM
     grpc (1.60.0-x86_64-linux)
       google-protobuf (~> 3.25)
       googleapis-common-protos-types (~> 1.0)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -193,11 +196,13 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.2)
+    memory_profiler (1.0.1)
     method_source (1.0.0)
     mini_mime (1.1.5)
     minitest (5.22.2)
     msgpack (1.7.2)
     multi_json (1.15.0)
+    multi_xml (0.6.0)
     mutex_m (0.2.0)
     net-http (0.4.1)
       uri
@@ -267,6 +272,8 @@ GEM
       thor (~> 1.0, >= 1.2.2)
       zeitwerk (~> 2.6)
     rake (13.1.0)
+    razorpay (3.2.1)
+      httparty (~> 0.14)
     rdoc (6.6.2)
       psych (>= 4.0.0)
     reline (0.4.2)
@@ -319,11 +326,14 @@ DEPENDENCIES
   debug
   devise
   doorkeeper
+  httparty
+  memory_profiler
   pg (~> 1.1)
   pry-rails
   puma (>= 5.0)
   rack-cors
   rails (~> 7.1.3)
+  razorpay
   sprockets-rails
   tzinfo-data
 

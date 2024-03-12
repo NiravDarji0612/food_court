@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -56,6 +56,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
   end
 
+  create_table "business_informations", force: :cascade do |t|
+    t.string "email"
+    t.string "phone"
+    t.string "reference_id"
+    t.string "legal_business_name"
+    t.string "business_type"
+    t.string "contact_name"
+    t.jsonb "profile_details", default: {}
+    t.jsonb "legal_info", default: {}
+    t.bigint "vendor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["vendor_id"], name: "index_business_informations_on_vendor_id"
+  end
+
   create_table "cart_items", force: :cascade do |t|
     t.bigint "cart_id", null: false
     t.bigint "food_item_id", null: false
@@ -63,8 +78,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
     t.integer "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "order_id"
     t.index ["cart_id"], name: "index_cart_items_on_cart_id"
     t.index ["food_item_id"], name: "index_cart_items_on_food_item_id"
+    t.index ["order_id"], name: "index_cart_items_on_order_id"
   end
 
   create_table "carts", force: :cascade do |t|
@@ -72,7 +89,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
     t.bigint "customer_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["customer_id"], name: "index_carts_on_customer_id".
+    t.index ["customer_id"], name: "index_carts_on_customer_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -149,11 +166,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
 
   create_table "orders", force: :cascade do |t|
     t.bigint "customer_id", null: false
-    t.bigint "cart_id", null: false
+    t.bigint "vendor_id", null: false
+    t.integer "status", default: 0
+    t.integer "amount_to_be_paid", default: 0
+    t.string "preparing_time"
+    t.integer "total_items", default: 0
+    t.string "token_number"
+    t.time "cancelled_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["cart_id"], name: "index_orders_on_cart_id"
+    t.jsonb "food_items_details", default: {}
+    t.string "razorpay_order_id", default: ""
     t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["vendor_id"], name: "index_orders_on_vendor_id"
   end
 
   create_table "vendor_categories", force: :cascade do |t|
@@ -190,6 +215,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "stall_name"
+    t.string "razorpay_key_id", default: ""
+    t.string "razorpay_secret_id", default: ""
     t.index ["email"], name: "index_vendors_on_email", unique: true
     t.index ["reset_password_token"], name: "index_vendors_on_reset_password_token", unique: true
   end
@@ -198,8 +225,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_01_094332) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "food_items"
+  add_foreign_key "cart_items", "orders"
   add_foreign_key "carts", "customers"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
-  add_foreign_key "orders", "carts"
   add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "vendors"
 end

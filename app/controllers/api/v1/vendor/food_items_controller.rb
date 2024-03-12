@@ -4,9 +4,9 @@ class Api::V1::Vendor::FoodItemsController < Api::V1::Vendor::BaseController
   def index
     if params[:category_name].present?
       category = Category.find_by_name(params[:category_name])
-      @food_items = FoodItem.joins(:vendor_category).where(vendor_categories: { category_id: category&.id, vendor_id: current_vendor.id })
+      @food_items = FoodItem.includes(:vendor_category).where(vendor_categories: { category_id: category&.id, vendor_id: current_vendor.id })
     else
-      @food_items = FoodItem.joins(:vendor_category).where(vendor_categories: { vendor_id: current_vendor.id })
+      @food_items = FoodItem.includes(:vendor_category).where(vendor_categories: { vendor_id: current_vendor.id })
     end
     @food_items = @food_items.map do |food_item|
       food_item.attributes.merge({ category_name: food_item&.vendor_category&.category&.name })
