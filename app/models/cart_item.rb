@@ -7,6 +7,6 @@ class CartItem < ApplicationRecord
   private
 
   def update_cart
-    cart.update(final_price: price_previous_change.compact.sum) if price_changed?
+    cart.update(final_price: price_change.compact.sum) if price_changed?
   end
 end

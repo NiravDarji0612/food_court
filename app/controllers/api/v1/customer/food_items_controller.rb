@@ -4,24 +4,25 @@ class Api::V1::Customer::FoodItemsController < Api::V1::Customer::BaseController
     category_id = params[:category_id]
     vendor_id = params[:vendor_id]
 
-    @food_items = case
-                  when category_id && vendor_id
-                    FoodItem.joins(:vendor_category).where(vendor_categories: { category_id: category_id, vendor_id: vendor_id })
-                  when category_id
-                    FoodItem.joins(:vendor_category).where(vendor_categories: { category_id: category_id })
-                  when vendor_id
-                    FoodItem.joins(:vendor_category).where(vendor_categories: { vendor_id: vendor_id })
-                  else
-                    FoodItem.all
-                  end.includes(vendor_category: [:category, :vendor])
+    @food_items = FoodItem.includes(vendor_category: %i[category vendor])
 
-    return render json: { message: "Food items are not present" }, status: :not_found if @food_items.empty?
+    if category_id && vendor_id
+      @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { category_id:,
+                                                                                   vendor_id: })
+    elsif category_id
+      @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { category_id: })
+    elsif vendor_id
+      @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { vendor_id: })
+    end
 
-    render json: { food_items: @food_items.as_json(include: { vendor_category: { include: [:category, :vendor] } }), message: "Food items have been fetched successfully" }, status: :ok
+    return render json: { message: 'Food items are not present' }, status: :not_found if @food_items.empty?
+
+    render json: { food_items: @food_items.as_json(include: { vendor_category: { include: %i[category vendor] } }), message: 'Food items have been fetched successfully' },
+           status: :ok
   end
 
   def show
-    render json: { food_item: @food_item, message: "Food item has been fetched successfully"}, status: :ok
+    render json: { food_item: @food_item, message: 'Food item has been fetched successfully' }, status: :ok
   end
 
   private
@@ -32,7 +33,7 @@ class Api::V1::Customer::FoodItemsController < Api::V1::Customer::BaseController
 
   def set_food_item
     @food_item = FoodItem.find_by_id(params[:id])
-    render json: { message: "Food item not found"}, status: :not_found unless @food_item
+    render json: { message: 'Food item not found' }, status: :not_found unless @food_item
   end
 
   # def set_vendor_category

@@ -71,13 +71,18 @@ Rails.application.configure do
 
   routes.default_url_options[:host] = 'localhost:3000'
 
-  config.hosts << /[\w-]+\.ngrok-free\.app/
+  config.hosts << "honest-huge-cat.ngrok-free.app"
+
+  # config.after_initialize do
+  #   Bullet.enable = true
+  #   Bullet.alert = true
+  #   Bullet.bullet_logger = true
+  #   Bullet.console = true
+  #   Bullet.rails_logger = true
+  # end
 
   config.after_initialize do
-    Bullet.enable = true
-    Bullet.alert = true
-    Bullet.bullet_logger = true
-    Bullet.console = true
-    Bullet.rails_logger = true
+    Prosopite.prosopite_logger = true
+    Prosopite.raise = true
   end
 end

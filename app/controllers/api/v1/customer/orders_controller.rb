@@ -24,7 +24,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
       end
     end
   rescue StandardError => e
-    render json: { message: e }, status: :unprocessable_entity
+    render json: { message: e.message }, status: :unprocessable_entity
   end
 
   def update; end
