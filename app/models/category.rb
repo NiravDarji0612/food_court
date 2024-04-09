@@ -1,4 +1,6 @@
 class Category < ApplicationRecord
+  include Rails.application.routes.url_helpers
+
   has_many :vendor_categories, dependent: :destroy
   has_many :vendors, through: :vendor_categories, dependent: :destroy
 
