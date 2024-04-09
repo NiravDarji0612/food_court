@@ -4,6 +4,7 @@ class Api::V1::Vendor::RegistrationsController < Api::V1::Vendor::BaseController
 
   def sign_up
     vendor = Vendor.new(vendor_params)
+    vendor.type_of_categories = JSON.parse(params[:vendor][:type_of_categories])
     client_app = Doorkeeper::Application.find_by(uid: params[:client_id])
     return render(json: { error: 'Invalid client ID' }, status: 403) unless client_app
     if vendor.save
@@ -28,6 +29,6 @@ class Api::V1::Vendor::RegistrationsController < Api::V1::Vendor::BaseController
 
   def vendor_params
     params.require(:vendor).permit(:first_name, :last_name, :email, :password, :phone_number,
-                                   :stall_logo, :stall_name, :franchise, :franchise_details, type_of_categories: [])
+                                   :stall_logo, :stall_name, :franchise, :franchise_details, :type_of_categories)
   end
 end
