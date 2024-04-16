@@ -22,8 +22,7 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
       # return json containing access token and refresh token
       # so that vendor won't need to call login API right after registration
       render(json: {
-        vendor: vendor,
-        categories: vendor&.categories,
+        vendor: vendor.as_json(only: [:id, :email, :first_name, :last_name, :phone_number], include: :categories),
         access_token: access_token.token,
         token_type: 'bearer',
         expires_in: access_token.expires_in,
@@ -39,12 +38,12 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
 
   def generate_refresh_token
     loop do
-      # generate a random token string and return it, 
+      # generate a random token string and return it,
       # unless there is already another token with the same string
       token = SecureRandom.hex(32)
       break token unless Doorkeeper::AccessToken.exists?(refresh_token: token)
     end
-  end 
+  end
 
   def vendor_params
     params.require(:vendor).permit(:email, :password)

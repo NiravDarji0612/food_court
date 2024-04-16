@@ -9,7 +9,7 @@ class Vendor < ApplicationRecord
   has_many :categories, through: :vendor_categories, dependent: :destroy
   has_one_attached :stall_logo
   has_many :orders, dependent: :destroy
-  has_one :business_information, dependent: :destroy
+  # has_one :business_information, dependent: :destroy
 
   normalizes :stall_name, with: ->(name) { name.titleize }
 

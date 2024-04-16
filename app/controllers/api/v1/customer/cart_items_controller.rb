@@ -3,8 +3,7 @@ class Api::V1::Customer::CartItemsController < Api::V1::Customer::BaseController
   before_action :set_cart_item, only: %i[destroy update]
 
   def create
-    cart_item = CartItem.new(cart_item_params)
-    cart_item.cart = @cart
+    cart_item = @cart.cart_items.new(cart_item_params)
     if cart_item.save
       render json: { message: 'item has been added to the cart' }, status: :ok
     else
@@ -31,7 +30,7 @@ class Api::V1::Customer::CartItemsController < Api::V1::Customer::BaseController
   private
 
   def cart_item_params
-    params.require(:cart_item).permit(:food_item_id, :quantity, :price)
+    params.require(:cart_item).permit(:food_item_id, :quantity, :price, :sub_type)
   end
 
   def set_cart

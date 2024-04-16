@@ -10,9 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_16_060205) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "citext"
   enable_extension "plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -56,21 +55,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
   end
 
-  create_table "business_informations", force: :cascade do |t|
-    t.string "email"
-    t.string "phone"
-    t.string "reference_id"
-    t.string "legal_business_name"
-    t.string "business_type"
-    t.string "contact_name"
-    t.jsonb "profile_details", default: {}
-    t.jsonb "legal_info", default: {}
-    t.bigint "vendor_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["vendor_id"], name: "index_business_informations_on_vendor_id"
-  end
-
   create_table "cart_items", force: :cascade do |t|
     t.bigint "cart_id", null: false
     t.bigint "food_item_id", null: false
@@ -79,6 +63,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "order_id"
+    t.string "sub_type"
     t.index ["cart_id"], name: "index_cart_items_on_cart_id"
     t.index ["food_item_id"], name: "index_cart_items_on_food_item_id"
     t.index ["order_id"], name: "index_cart_items_on_order_id"
@@ -110,15 +95,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_customers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
-  end
-
-  create_table "demos", force: :cascade do |t|
-    t.text "name"
-    t.string "email"
-    t.string "phone"
-    t.string "city"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "food_items", force: :cascade do |t|
@@ -171,12 +147,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
     t.integer "amount_to_be_paid", default: 0
     t.string "preparing_time"
     t.integer "total_items", default: 0
-    t.string "token_number"
+    t.integer "token_number", default: 0
     t.time "cancelled_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "food_items_details", default: {}
     t.string "razorpay_order_id", default: ""
+    t.string "payment_status"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["vendor_id"], name: "index_orders_on_vendor_id"
   end
@@ -188,15 +165,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_12_103253) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_vendor_categories_on_category_id"
     t.index ["vendor_id"], name: "index_vendor_categories_on_vendor_id"
-  end
-
-  create_table "vendor_food_items", force: :cascade do |t|
-    t.bigint "vendor_id"
-    t.bigint "food_item_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["food_item_id"], name: "index_vendor_food_items_on_food_item_id"
-    t.index ["vendor_id"], name: "index_vendor_food_items_on_vendor_id"
   end
 
   create_table "vendors", force: :cascade do |t|

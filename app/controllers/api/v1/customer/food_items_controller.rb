@@ -5,15 +5,10 @@ class Api::V1::Customer::FoodItemsController < Api::V1::Customer::BaseController
     vendor_id = params[:vendor_id]
 
     @food_items = FoodItem.includes(vendor_category: %i[category vendor])
-
-    if category_id && vendor_id
-      @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { category_id:,
-                                                                                   vendor_id: })
-    elsif category_id
-      @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { category_id: })
-    elsif vendor_id
-      @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { vendor_id: })
-    end
+    @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { category_id:,
+                  vendor_id: })  if category_id && vendor_id
+    @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { category_id: })  if category_id
+    @food_items = @food_items.joins(:vendor_category).where(vendor_categories: { vendor_id: }) if vendor_id
 
     return render json: { message: 'Food items are not present' }, status: :not_found if @food_items.empty?
 

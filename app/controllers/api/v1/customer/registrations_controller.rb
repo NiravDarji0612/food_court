@@ -40,12 +40,12 @@ class Api::V1::Customer::RegistrationsController < Api::V1::Customer::BaseContro
 
   def generate_refresh_token
     loop do
-      # generate a random token string and return it, 
+      # generate a random token string and return it,
       # unless there is already another token with the same string
       token = SecureRandom.hex(32)
       break token unless Doorkeeper::AccessToken.exists?(refresh_token: token)
     end
-  end 
+  end
 
   def customer_params
     params.require(:customer).permit(:name, :phone_number, :email, :password)

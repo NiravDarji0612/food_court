@@ -26,7 +26,7 @@ class Api::V1::Customer::CategoriesController < Api::V1::Customer::BaseControlle
   end
 
   def set_category
-    @category = Category.find_by_id(params[:id])
+    @category = Category.includes(:vendors).find_by_id(params[:id])
     render json: { message: "category not found"}, status: :unprocessable_entity unless @category
   end
 end

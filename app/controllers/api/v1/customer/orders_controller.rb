@@ -27,6 +27,26 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
     render json: { message: e.message }, status: :unprocessable_entity
   end
 
+  def callback
+    order_id = params["order_id"]
+    payment_id = params["payment_id"]
+
+    razorpay_order = Razorpay::Order.fetch(order_id)
+
+    if razorpay_order.attributes['status'] == 'paid'
+      @order = Order.find_by(razorpay_order_id: order_id)
+      if @order.present?
+        @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneratorService.new.generate_sequence_token)
+        @order.cart_items << current_customer.cart.cart_items
+        render json: { order: @order, message: "Payment is done successfully"}, status: :ok
+      else
+        render json: { message: "Order not found" }, status: :not_found
+      end
+    else
+      render json: { message: "Payment failed, please try again!!!" }, status: :unprocessable_entity
+    end
+  end
+
   def update; end
 
   def destroy; end
@@ -42,8 +62,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
     setup_details = Payment.new(@vendor).razorpay_setup
     return if setup_details
 
-    render json: { message: 'could not intialize your razorpay account, please try after sometime.' },
-           status: :unprocessable_entity
+    render json: { message: 'could not intialize your razorpay account, please try after sometime.' }, status: :unprocessable_entity
   end
 
   def set_amount
@@ -52,6 +71,6 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
   end
 
   def order_params
-    params.require(:order).permit(:vendor_id, :amount_to_be_paid, :total_items, food_items_details: {})
+    params.require(:order).permit(:vendor_id, :amount_to_be_paid, :total_items)
   end
 end
