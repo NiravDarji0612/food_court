@@ -29,6 +29,6 @@ class Api::V1::Vendor::RegistrationsController < Api::V1::Vendor::BaseController
 
   def vendor_params
     params.require(:vendor).permit(:first_name, :last_name, :email, :password, :phone_number,
-                                   :stall_logo, :stall_name, :franchise, :franchise_details, type_of_categories: [])
+                                   :stall_logo, :stall_name, :franchise, :franchise_details, type_of_categories: [], :razorpay_key_id, :razorpay_secret_id)
   end
 end
