@@ -22,7 +22,7 @@ class Api::V1::Vendor::SessionsController < Api::V1::Vendor::BaseController
       # return json containing access token and refresh token
       # so that vendor won't need to call login API right after registration
       render(json: {
-        vendor: vendor.as_json(only: [:id, :email, :first_name, :last_name, :phone_number], include: :categories),
+        vendor: vendor.as_json(only: [:id, :email, :first_name, :last_name, :phone_number, :razorpay_key_id, :razorpay_secret_id], include: :categories),
         access_token: access_token.token,
         token_type: 'bearer',
         expires_in: access_token.expires_in,
