@@ -2,8 +2,8 @@ class Api::V1::Customer::CategoriesController < Api::V1::Customer::BaseControlle
   before_action :set_category, except: %i[index]
   def index
     categories = Category.includes(vendors: [stall_logo_attachment: :blob])
-    categories = categories.map do |cat|
-      cat.attributes.merge({ image: url_for(cat&.image), vendors: cat.vendors })
+    categories = categories.map do |category|
+      category.attributes.merge({ image: category.image.attached? ? url_for(category.image) : '', vendors: category&.vendors })
     end
     if categories
       render json: { categories: categories, message: "Categories has been fetched successfully" }, status: :ok

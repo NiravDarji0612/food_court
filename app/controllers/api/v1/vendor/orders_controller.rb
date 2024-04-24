@@ -1,10 +1,11 @@
 class Api::V1::Vendor::OrdersController < Api::V1::Vendor::BaseController
+  before_action :set_order, except: %i[index]
   def index
     orders = @current_vendor.orders
     unless orders.empty?
       render json: { orders:, message: "Your orders has been fetched successfully."}, status: :ok
     else
-      render json: { error: "No orders available at the moment"}, status: :ok
+      render json: { message: "No orders available at the moment"}, status: :ok
     end
   end
 
@@ -43,7 +44,7 @@ class Api::V1::Vendor::OrdersController < Api::V1::Vendor::BaseController
   private
 
   def set_order
-    @order = Order.find_by_id(params[:id]) || Order.find_by(token_number: params[:token_number])
+    @order = Order.find_by_id(params[:order_id]) || Order.find_by(token_number: params[:token_number])
     return render json: { message: "Order not found" }, status: :not_found unless @order
   end
 end

@@ -18,7 +18,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
       order.vendor = @vendor
       order.razorpay_order_id = razorpay_order.attributes['id']
       if order.save
-        render json: { order:, message: 'Your order has been reached to the vendor' }, status: :created
+        render json: { order:, message: 'Order has been initiated' }, status: :created
       else
         render json: { error: order.errors.full_messages }, status: :unprocessable_entity
       end
@@ -34,17 +34,21 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
     razorpay_order = Razorpay::Order.fetch(order_id)
 
     if razorpay_order.attributes['status'] == 'paid'
-      @order = Order.find_by(razorpay_order_id: order_id)
-      if @order.present?
-        @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneratorService.new.generate_sequence_token)
-        @order.cart_items << current_customer.cart.cart_items
-        render json: { order: @order, message: "Payment is done successfully"}, status: :ok
-      else
-        render json: { message: "Order not found" }, status: :not_found
+      ActiveRecord::Base.transaction do
+        @order = Order.find_by(razorpay_order_id: order_id)
+        if @order.present?
+          @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneratorService.new.generate_sequence_token)
+          @order.cart_items << current_customer.cart.cart_items
+          render json: { order: @order, message: "Payment is done successfully"}, status: :ok
+        else
+          render json: { message: "Order not found" }, status: :not_found
+        end
       end
     else
       render json: { message: "Payment failed, please try again!!!" }, status: :unprocessable_entity
     end
+  rescue StandardError => e
+    render json: { message: e.message }, status: :unprocessable_entity
   end
 
   def update; end
@@ -54,7 +58,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
   private
 
   def set_vendor
-    @vendor = Vendor.find_by_id(order_params[:vendor_id])
+    @vendor = Vendor.find_by_id(params[:order][:vendor_id])
     render json: { message: 'Vendor not found' }, status: :not_found unless @vendor
   end
 

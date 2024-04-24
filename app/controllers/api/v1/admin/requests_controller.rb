@@ -43,7 +43,7 @@ class Api::V1::Admin::RequestsController < Api::V1::Admin::BaseController
   end
 
   def update_vendor_categories(vendor)
-    category_ids = vendor.type_of_categories.map { |category| Category.find_or_create_by(name: category)&.id }.compact
+    category_ids = vendor.type_of_categories.map { |category| Category.find_by(name: category)&.id }.compact
     vendor.category_ids = category_ids if category_ids.present?
   end
 end
