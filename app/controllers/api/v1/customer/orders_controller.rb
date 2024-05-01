@@ -1,4 +1,5 @@
 class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
+  before_action :doorkeeper_authorize!, only: :create
   before_action :set_vendor, only: :create
   before_action :setup_razorpay_account, only: :create
   before_action :set_amount, only: :create
