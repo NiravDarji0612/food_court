@@ -2,7 +2,12 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
   before_action :set_vendor, only: :create
   before_action :setup_razorpay_account, only: :create
   before_action :set_amount, only: :create
-  def index; end
+
+  def index
+    @orders = current_customer.orders
+    return render json: { orders: @orders, message: "Orders has been fetched successfully" }, status: :ok if @orders
+    render json: { orders: "orders has not been found"}, status: :ok
+  end
 
   def show; end
 
@@ -40,7 +45,8 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
         if @order.present?
           @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneration.new.generate_sequence_token)
           @order.cart_items << current_customer.cart.cart_items
-          render json: { order: @order, message: "Payment is done successfully"}, status: :ok
+          current_customer.cart.cart_items.destroy_all
+          render json: { order: @order.as_json(include: :cart_items), message: "Payment is done successfully"}, status: :ok
         else
           render json: { message: "Order not found" }, status: :not_found
         end
