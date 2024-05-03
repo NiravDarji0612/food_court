@@ -1,5 +1,5 @@
 class Api::V1::Customer::BaseController < ApplicationController
-  # before_action :doorkeeper_authorize!
+  before_action :doorkeeper_authorize!
 
   private
 
