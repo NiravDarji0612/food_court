@@ -8,7 +8,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
 
   def create
     ActiveRecord::Base.transaction do
-      razorpay_order = Razorpay::Order.create(amount: @amount, currency: 'INR')
+      razorpay_order = Razorpay::Order.create(amount: @amount * 100, currency: 'INR')
       unless razorpay_order.present? && razorpay_order.attributes['id'].present?
         return render json: { message: 'Failed to create order, please try in sometime.' },
                       status: :unprocessable_entity
