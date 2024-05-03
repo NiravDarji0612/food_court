@@ -40,7 +40,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
         if @order.present?
           @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneration.new.generate_sequence_token)
           @order.cart_items << current_customer.cart.cart_items
-          render json: { order: @order.merge({@order.cart_items}), ,message: "Payment is done successfully"}, status: :ok
+          render json: { order: @order, message: "Payment is done successfully"}, status: :ok
         else
           render json: { message: "Order not found" }, status: :not_found
         end
