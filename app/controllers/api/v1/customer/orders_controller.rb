@@ -1,5 +1,4 @@
 class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
-  before_action :doorkeeper_authorize!, only: :create
   before_action :set_vendor, only: :create
   before_action :setup_razorpay_account, only: :create
   before_action :set_amount, only: :create
@@ -34,13 +33,14 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
 
     razorpay_order = Razorpay::Order.fetch(order_id)
 
+
     if razorpay_order.attributes['status'] == 'paid'
       ActiveRecord::Base.transaction do
         @order = Order.find_by(razorpay_order_id: order_id)
         if @order.present?
-          @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneratorService.new.generate_sequence_token)
+          @order.update(payment_status: 'paid', razorpay_payment_id: payment_id,  token_number: TokenGeneration.new.generate_sequence_token)
           @order.cart_items << current_customer.cart.cart_items
-          render json: { order: @order, message: "Payment is done successfully"}, status: :ok
+          render json: { order: @order.merge({@order.cart_items}), ,message: "Payment is done successfully"}, status: :ok
         else
           render json: { message: "Order not found" }, status: :not_found
         end
