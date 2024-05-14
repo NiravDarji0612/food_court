@@ -2,8 +2,9 @@ class Api::V1::Vendor::OrdersController < Api::V1::Vendor::BaseController
   before_action :set_order, except: %i[index]
   def index
     orders = @current_vendor.orders
+    orders = orders.map{|order| order.attributes.merge({customer_name: order.customer.name})}
     unless orders.empty?
-      render json: { orders:, message: "Your orders has been fetched successfully."}, status: :ok
+      render json: { orders: orders, message: "Your orders has been fetched successfully."}, status: :ok
     else
       render json: { message: "No orders available at the moment"}, status: :ok
     end
