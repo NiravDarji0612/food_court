@@ -44,9 +44,11 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
         @order = Order.find_by(razorpay_order_id: order_id)
         if @order.present?
           @order.update(payment_status: 'paid', razorpay_payment_id: payment_id)
-          @order.cart_items << current_customer.cart.cart_items
+
+          @order.cart_items << current_customer.cart.cart_items.joins(food_item: { vendor_category: :vendor }).where("vendors.id = ?", @order.vendor_id)
+
           @order.update(food_items_details:  @order.cart_items.map{|c| {name: c.food_item.name, category: c.food_item.item_type, type: c.sub_type, amount: c.food_item.price} })
-          current_customer.cart.cart_items.destroy_all
+          @order.cart_items.destroy_all
           render json: { order: @order.as_json(include: :cart_items), message: "Payment is done successfully"}, status: :ok
         else
           render json: { message: "Order not found" }, status: :not_found
