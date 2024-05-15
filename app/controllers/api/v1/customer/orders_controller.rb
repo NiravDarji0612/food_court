@@ -5,6 +5,7 @@ class Api::V1::Customer::OrdersController < Api::V1::Customer::BaseController
 
   def index
     @orders = current_customer.orders
+    @orders = orders.map{|order| order.attributes.merge({stall_name: order.vendor.stall_name})}
     return render json: { orders: @orders, message: "Orders has been fetched successfully" }, status: :ok if @orders
     render json: { orders: "orders has not been found"}, status: :ok
   end
