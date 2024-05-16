@@ -4,7 +4,7 @@ class Order < ApplicationRecord
   belongs_to :vendor
   has_many :cart_items, dependent: :destroy
 
-  enum :status, { pending: 0, approved: 1, rejected: 2, preparing: 3, ready_for_delivery: 4 }
+  enum :status, { not_approved: 0, approved: 1, cancle_order: 2, preparing_order: 3, ready_for_delivery: 4  }
 
   before_save :increment_token, on: :create
 
